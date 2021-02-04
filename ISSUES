@@ -6,4 +6,4 @@ make individual note attributes editable
 
 rhythmic flexibility
 
-2/3/21 if samplesize < scale and measure_length >= scale - validation.  Some sort of factorial calculation
+2/3/21 if samplesize < scale and measure_length >= scale.  Needs validation, Some sort of factorial calculation
