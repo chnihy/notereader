@@ -3,7 +3,7 @@
 
 import xml.etree.ElementTree as ET
 from prettify import prettify
-import config, notereader, scales
+import config, notereader, scales, shutil
 
 def SubElementWithText(parent, tag, text): 
     attrib = {}
@@ -68,6 +68,16 @@ def xmlwrite():
     lyrics_font = ET.SubElement(defaults, "lyric-font")
     lyrics_font.set('font-family','FreeSerif')
     lyrics_font.set('font-size','11')
+
+    #TITLE 
+    credit = ET.SubElement(scorepartwise, "credit", page="1") #pagenum might need modification in the future
+    SubElementWithText(credit, "credit-type", "title")
+    credit_words = ET.SubElement(credit, "credit-words", attrib={"default-x": "510","default-y":"1364","justify":"center","valign":"top","font-size":"18"})
+    sampl = ""
+    config.sample.sort()
+    for i in range(len(config.sample)):
+        sampl = sampl + ", " + config.sample[i]
+    credit_words.text = str(config.title) + " " + str(sampl[1:])
 
     #PARTS LIST BLOCK - TODO CREATE AN INSTRUMENT FUNC
     partlist = ET.SubElement(scorepartwise, "part-list") #instruments...
@@ -186,5 +196,8 @@ def xmlwrite():
     prettify(scorepartwise)#pretty formatting
 
     tree = ET.ElementTree(scorepartwise) #Making everything above into a tree
-
-    tree.write('xmlwriter_test.xml', encoding='UTF-8', xml_declaration=True) #write to a file
+    
+    #WRITING TO A FILE
+    tree.write('/xmlbounces/' + f'{config.filename}.xml', encoding='UTF-8', xml_declaration=True) #write to a file
+    
+    

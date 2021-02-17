@@ -7,12 +7,18 @@ timesig_beattype = ""
 clef = ""
 clef_line = ""
 measure_length = ""
+sample_size = ""
+sample = []
+duplicates = ""
 notetype = ""
-key = ""
+root = ""
+scaletype = ""
 fifths = ""
-master = ""
+master = []
 exercise_list = []
 exercises_withattr_list = {}
+filename = ""
+title = ""
 
 """globallist = {"time_signature": time_signature, \
 				"notetype": notetype, \
