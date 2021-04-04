@@ -3,7 +3,7 @@
 
 import xml.etree.ElementTree as ET
 from prettify import prettify
-import config, notereader, scales, shutil
+import time, config, notereader, scales, shutil
 
 def SubElementWithText(parent, tag, text): 
     attrib = {}
@@ -19,9 +19,9 @@ def xmlwrite():
     identification = ET.SubElement(scorepartwise, "identification") #not sure how much is necessary here...
     encoding = ET.SubElement(identification, "encoding")
     software = ET.SubElement(encoding, "software ")
-    software.text = "MuseScore 3.2.3"
+    software.text = "MuseScore 3.5.2"
     encodingdate = ET.SubElement(encoding, "encoding-date")
-    encodingdate.text = "2020-08-31" #make this updatable - time module seems appropriate
+    encodingdate.text = "2021-02-18" #doesn't support importing from config
     supports_accidental = ET.SubElement(encoding, "supports", element="accidental", type="yes")
     supports_beam = ET.SubElement(encoding, "supports", element="beam", type="yes")
     supports_printpage = ET.SubElement(encoding, "supports", element="print", attribute="new-page", type="yes", value="yes")
@@ -76,7 +76,7 @@ def xmlwrite():
     sampl = ""
     config.sample.sort()
     for i in range(len(config.sample)):
-        sampl = sampl + ", " + config.sample[i]
+        sampl = str(sampl) + ", " + str(config.sample[i])
     credit_words.text = str(config.title) + " " + str(sampl[1:])
 
     #PARTS LIST BLOCK - TODO CREATE AN INSTRUMENT FUNC
@@ -103,13 +103,18 @@ def xmlwrite():
     #PARTS BLOCK - WHERE THE NOTES GO
     part = ET.SubElement(scorepartwise, "part", id="P1") #where the notes are written...
     #TODO MAKE A FIST MEASURE FUNC OR LOOP --> FIRST MEASURE HAS KEY SIG/TIME SIG/MEASURE LAYOUT
-
     exercise_list = config.exercises_withattr_list
-    beats = config.timesig_beats #TODO data validation, dummy proof
+    exercise_list_staff2 = config.exercises_withattr_list_staff2
+    if config.grid == "yes":
+        exercise_list = config.grid_exercise_list
+        grid_attributes = config.grid_attributes
+    beats = config.timesig_beats
     beat_type = config.timesig_beattype
     fifths = config.fifths
+    clef = config.clef
 
-    #NOTE MAKING
+
+    #NOTE MAKING FOR SINGLE STAFF/STAFF 1
     for exercise_num in exercise_list: #aka for ex_number in exercise_list.keys() 
         measure = ET.SubElement(part, "measure", number=str(exercise_num), width="555") #this will obviously change from here on out
         
@@ -143,49 +148,102 @@ def xmlwrite():
         #KEY/CLEF/TIME SIGNATURE #TODO MAKE CLEF VISIBLE OPTIONALLY
         if int(exercise_num) == 1: #CLEF AND TIME SIG FOR FIRST MEASURE    
             attributes = ET.SubElement(measure, "attributes")
-            #SubElementWithText(attributes, "divisions", "1")
+            if config.grid != "yes":
+                divisions_keys = {"quarter":"1","eighth":"2","16th":"4","32nd":"8","4":"1"}
+                divisions = divisions_keys[config.notetype] #TODO, NOTETYPE FOR GRAND STAFF SHOULD BE THE SMALLEST SUBDIV OF THE TWO
+            if config.grid == "yes":
+                divisions = grid_attributes["divisions"]
+            SubElementWithText(attributes, "divisions", divisions)
             key = ET.SubElement(attributes, "key")
             SubElementWithText(key, "fifths", fifths)
             time = ET.SubElement(attributes, "time")
             SubElementWithText(time, "beats", beats)
             SubElementWithText(time, "beat-type", beat_type)
-            clef = ET.SubElement(attributes, "clef")
-            SubElementWithText(clef, "sign", config.clef)
-            SubElementWithText(clef, "line", config.clef_line) #TODO clef if being doubled for some reason...
-                   
+            #clef = ET.SubElement(attributes, "clef")
+            #SubElementWithText(clef, "sign", config.clef)
+            #SubElementWithText(clef, "line", config.clef_line) #TODO clef if being doubled for some reason...
+            if config.clef == "Grand Staff":
+                SubElementWithText(attributes, "staves", "2")
+                clef1 = ET.SubElement(attributes, "clef", number = "1")
+                SubElementWithText(clef1, "sign", "G")
+                SubElementWithText(clef1, "line", "2")
+                clef2 = ET.SubElement(attributes, "clef", number = "2")
+                SubElementWithText(clef2, "sign", "F")
+                SubElementWithText(clef2, "line", "4")
+            else:
+                clef = ET.SubElement(attributes, "clef")
+                SubElementWithText(clef, "sign", config.clef)
+                SubElementWithText(clef, "line", config.clef_line) #TODO clef if being doubled for some reason..."""
+                    
         #REHEARSAL MARK
         direction = ET.SubElement(measure, "direction", placement="above")
         direction_type = ET.SubElement(direction, "direction-type")
         rehearsal = ET.SubElement(direction_type,"rehearsal")
         rehearsal.attrib = {"default-x":"-10.00","relative-y":"30.00","font-weight":"bold","font-size":"14"}
-        rehearsal.text = exercise_num+'.'
+        rehearsal.text = str(exercise_num) + '.'
         direction_type.text = str(exercise_num)
         
-        #
-        
-        #measureprint = ET.SubElement(measure, "print") #FIRST MEASURE STUFF
-        #system_layout = ET.SubElement(measureprint, "system-layout") #MARGINS AND STUFF GO IN HERE
-        #attributes = ET.SubElement(measure, "attributes")#FIRST MEASURE STUFF
-        #divisions = ET.SubElement(attributes, "divisions")#
-        #divisions.text = "4" #changes with time signature I would assume
-        for ex_note in exercise_list[exercise_num].keys(): #
-            note = ET.SubElement(measure, "note")
-            pitch = ET.SubElement(note, "pitch")
-            SubElementWithText(pitch, "step", ex_note[0])
-            if 'sharp' in ex_note: #TODO FIFTHS 
-                SubElementWithText(pitch, "alter", "1")
-            if 'flat' in ex_note:
-                SubElementWithText(pitch, "alter", "-1")
-            noteattr = exercise_list[exercise_num][ex_note]
-            SubElementWithText(pitch, "octave", noteattr[0])
-            SubElementWithText(note, "duration", noteattr[1])
-            SubElementWithText(note, "voice", noteattr[2])
-            SubElementWithText(note, "type", noteattr[3])
-            if 'sharp' in ex_note:
-                SubElementWithText(note, "accidental", "sharp")
-            if 'flat' in ex_note:
-                SubElementWithText(note, "accidental", "flat")
-            SubElementWithText(note, "stem", noteattr[4])
+        #NOTES FIRST STAFF OR SINGLE STAFF
+        if config.grid != "yes":
+            for ex_note in exercise_list[exercise_num].keys(): #
+                note = ET.SubElement(measure, "note")
+                pitch = ET.SubElement(note, "pitch")
+                SubElementWithText(pitch, "step", ex_note[0])
+                if 'sharp' in ex_note: #TODO FIFTHS 
+                    SubElementWithText(pitch, "alter", "1")
+                if 'flat' in ex_note:
+                    SubElementWithText(pitch, "alter", "-1")
+                noteattr = exercise_list[exercise_num][ex_note]
+                SubElementWithText(pitch, "octave", noteattr[0])
+                SubElementWithText(note, "duration", noteattr[1])
+                SubElementWithText(note, "voice", noteattr[2])
+                SubElementWithText(note, "type", noteattr[3])
+                if ex_note not in scales.allscales[config.scaletype][config.key_sig]:
+                    if 'sharp' in ex_note:
+                        SubElementWithText(note, "accidental", "sharp")
+                    if 'flat' in ex_note:
+                        SubElementWithText(note, "accidental", "flat")
+                SubElementWithText(note, "stem", noteattr[4])
+                if clef == "Grand Staff": 
+                    SubElementWithText(note, "staff", noteattr[5])
+            #SECOND STAFF
+            if clef == "Grand Staff":
+                #BACKUP TAG  
+                backup = ET.SubElement(measure, "backup")
+                SubElementWithText(backup, "duration", str(int(divisions) * int(config.timesig_beats)))
+                #SECOND STAFF NOTES
+                for ex_note in exercise_list_staff2[exercise_num].keys():
+                    note = ET.SubElement(measure, "note")
+                    pitch = ET.SubElement(note, "pitch")
+                    SubElementWithText(pitch, "step", ex_note[0])
+                    if 'sharp' in ex_note: #TODO FIFTHS 
+                        SubElementWithText(pitch, "alter", "1")
+                    if 'flat' in ex_note:
+                        SubElementWithText(pitch, "alter", "-1")
+                    noteattr = exercise_list_staff2[exercise_num][ex_note]
+                    SubElementWithText(pitch, "octave", noteattr[0])
+                    SubElementWithText(note, "duration", noteattr[1])
+                    SubElementWithText(note, "voice", noteattr[2])
+                    SubElementWithText(note, "type", noteattr[3])
+                    if 'sharp' in ex_note:
+                        SubElementWithText(note, "accidental", "sharp")
+                    if 'flat' in ex_note:
+                        SubElementWithText(note, "accidental", "flat")
+                    SubElementWithText(note, "stem", noteattr[4])
+                    SubElementWithText(note, "staff", noteattr[5])
+                
+        #GRID STAFF
+        if config.grid == "yes":
+            for ex_notes in exercise_list[exercise_num]: #
+                for ex_note in ex_notes:
+                    note = ET.SubElement(measure, "note")
+                    pitch = ET.SubElement(note, "pitch")
+                    SubElementWithText(pitch, "step", "A")
+                    SubElementWithText(pitch, "octave", "4")
+                    SubElementWithText(note, "duration", grid_attributes[ex_note + "_dur"])
+                    SubElementWithText(note, "voice", "1")
+                    SubElementWithText(note, "type", ex_note)
+                    SubElementWithText(note, "stem", "up")
 
         #BARLINE RIGHT
         barline_right = ET.SubElement(measure,"barline", location="right")
@@ -198,6 +256,6 @@ def xmlwrite():
     tree = ET.ElementTree(scorepartwise) #Making everything above into a tree
     
     #WRITING TO A FILE
-    tree.write('/xmlbounces/' + f'{config.filename}.xml', encoding='UTF-8', xml_declaration=True) #write to a file
+    tree.write('./xmlbounces/' + f'{config.filename}.xml', encoding='UTF-8', xml_declaration=True) #write to a file
     
     

@@ -6,8 +6,6 @@ from pprint import pprint
 import exceptions as e
 import scales, config, attributes, math, os, sys, time
 
-br = "\n"
-
 def run(selection):
        print("\n" + "---------- NOTE READER ----------" + "\n")
        
@@ -21,24 +19,32 @@ def run(selection):
               #CLEF
               while True:
                      try:
-                            clef = input("ENTER CLEF (t)reble or (b)ass: "+"\n")
-                            whitelist_t = ["t","tr","tre","treb","treble","g"]
-                            whitelist_b = ["b","ba","bas","bass","f"]
+                            clef = input("ENTER CLEF (T)reble, (B)ass, or (G)rand Staff: "+"\n")
+                            whitelist_t = ["t","tr","tre","treb","treble"]
+                            whitelist_b = ["b","ba","bas","bass"]
+                            whitelist_g = ["g","gr","gra","gran","grand"]
                             if clef.lower() in whitelist_t:
                                    clef = "G"
-                                   clef_line = "2"
+                                   clef_line = "2" #config.clef_line = clef_line
                                    break
                             if clef.lower() in whitelist_b:
                                    clef = "F"
                                    clef_line = "4"
+                                   #config.clef_line = clef_line
                                    break
-                            if clef not in (whitelist_b + whitelist_t):
-                                   raise Exception  
+                            if clef.lower() in whitelist_g:
+                                   clef = "Grand Staff"
+                                   config.staves = "2"
+                                   clef_line = None
+                                   break
+                            if clef not in (whitelist_b + whitelist_t + whitelist_g):
+                                   raise Exception
                      except Exception:
                             print("\n" + "ERROR: Enter a valid clef!" + "\n")
                             continue
               config.clef = clef
               config.clef_line = clef_line
+
               
               #KEY SIGNATURE
               while True:
@@ -57,7 +63,7 @@ def run(selection):
                      except ValueError:
                             print("\n" + "ERROR: Enter a valid key: " +"\n")
                             continue
-              config.fifths = scales.Key(key_sig).fifths[key_sig]
+              config.key_sig = key_sig
 
               #SCALE ROOT
               while True:
@@ -82,7 +88,18 @@ def run(selection):
                      try:
                             scaletype = input("\n" + f"ENTER SCALE TYPE OR 'list' FOR LIST OF SCALES: " + "\n") #TODO DATA VALIDATION, SHARPS AND FLATS AND ERRORS
                             s = scaletype.lower()
-                            whitelist_scales = ["chromatic", "major","minor","melodic minor","major pentatonic","pentatonic"]
+                            whitelist_scales = ["chromatic",
+                                                  "major",
+                                                  "minor",
+                                                  "melodic minor",
+                                                  "major pentatonic",
+                                                  "pentatonic"]
+                            scales_shortcuts = {"c":"chromatic",
+                                                 "maj":"major",
+                                                 "min":"minor",
+                                                 "mm":"melodic minor",
+                                                 "p":"pentatonic",
+                                                 "pent":"pentatonic"}
                             if s == 'list':
                                    print("------------")
                                    print("\n" + "SCALES" + "\n")
@@ -90,7 +107,9 @@ def run(selection):
                                    continue
                             if s not in whitelist_scales:
                                    raise Exception
-                            if s == "chromatic":
+                            if s in scales_shortcuts:
+                                   s = scales_shortcuts[s]
+                            if s == "chromatic": #Make a dictionary
                                    scale = scales.Chromatic(root).scale
                                    break
                             if s == "major" :
@@ -114,9 +133,14 @@ def run(selection):
                      except Exception:
                             print("\n" + f"ERROR: {scaletype} is not a valid scale" + "\n")
                             continue
+              pent_scaletypes={"pentatonic":"minor","major pentatonic":"major","minor pentatonic":"minor"}
+              if scaletype in pent_scaletypes.keys():
+                     config.fifths = scales.Fifths(key_sig).fifths[key_sig + (pent_scaletypes[s])]
+              else:
+                     config.fifths = scales.Fifths(key_sig).fifths[key_sig + s]
               config.scaletype = scaletype
               
-              #TIME SIGNATURE
+              #TIME SIGNATURE BEATS
               while True:
                      try: #BETTER DATA VALIDATION, REGEX OR PYDANT
                             timesig_beats = input("\n" + "ENTER BEATS PER MEASURE (ex 4): "+"\n")
@@ -141,11 +165,11 @@ def run(selection):
                             continue
               config.timesig_beats = timesig_beats
               config.timesig_beattype = timesig_beattype
+              tim_sig = timesig_beats + "/" + timesig_beattype
               
               #RHYTHM TYPE AKA NOTETYPE
               while True:
                      try:
-                            notetype = input("\n" + "ENTER RHYTHM OR 'list': "+"\n") 
                             shortcuts = {#"1":"whole",\
                                           #"2":"half",\
                                           "4":"quarter",\
@@ -155,69 +179,130 @@ def run(selection):
                                           "sixteenth":"16th", # TODO BEAM ACTION \ 
                                           "32":"32nd", \
                                           "thirty second": "32nd"}
-                            if not notetype.isalnum:
-                                   raise ValueError
-                            if notetype.lower() == 'list':
-                                   print("\n" #+ "-- whole or 1" + "\n" \
-                                          #+ "-- half or 2" + "\n"\
-                                          + "-- quarter or 4" + "\n"\
-                                          #+ "-- quarter triplets or 6" + "\n"\
-                                          + "-- eighth or 8" + "\n"\
-                                          #+ "-- eighth triplets or 12" + "\n"\
-                                          + "-- sixteenth or 16" + "\n" )
-                                          #+ #"-- sixteenth triplets or 24")
-                                   #print('\n')
-                                   continue
-                            if notetype in shortcuts.keys():
-                                   notetype = shortcuts[notetype]
-                                   break
-                            if notetype not in shortcuts and notetype != 'list' :
-                                   raise Exception
+                            notetype_list ="\n"  + "-- whole or 1" + "\n" + "-- half or 2" + "\n" \
+                                                 + "-- quarter or 4" + "\n" + "-- quarter triplets or 6" + "\n"\
+                                                 + "-- eighth or 8" + "\n" + "-- eighth triplets or 12" + "\n"\
+                                                 + "-- sixteenth or 16" + "\n" + "-- sixteenth triplets or 24"
+                            #NOTETYPE FORGRAND STAFF
+                            if clef == "Grand Staff":
+                                   #STAFF 1 RHYTHM
+                                   notetype = notetype_staff1 = notetype_int = input("\n" + "ENTER TREBLE CLEF RHYTHM OR 'list': "+"\n")
+                                   if not notetype.isalnum:
+                                          raise ValueError
+                                   if notetype.lower() == 'list':
+                                          print(notetype_list)
+                                          continue
+                                   if notetype in shortcuts.keys():
+                                          config.notetype = shortcuts[notetype]
+                                          notetype_staff1 = shortcuts[notetype]
+                                          config.notetype_int = notetype_int
+                                          config.notetype_staff1 = notetype_staff1
+                                   if notetype not in shortcuts and notetype != 'list' :
+                                          raise Exception
+                                   
+
+                                   #STAFF 2 RHYTHM
+                                   notetype = notetype_staff2 = notetype_staff2_int = input("\n" + "ENTER BASS CLEF RHYTHM OR 'list': "+"\n")
+                                   if not notetype.isalnum:
+                                          raise ValueError
+                                   if notetype.lower() == 'list':
+                                          print(notetype_list)
+                                          continue
+                                   if notetype in shortcuts.keys():
+                                          notetype_staff2 = shortcuts[notetype]
+                                          config.notetype_staff2 = notetype_staff2
+                                          config.notetype_staff2_int = notetype_staff2_int
+                                          if int(notetype_staff2_int) > int(notetype_int):
+                                                 config.notetype = notetype_staff2
+                                                 notetype = notetype_staff2
+                                          break
+                                   if notetype not in shortcuts and notetype != 'list' :
+                                          raise Exception
+                                   else:
+                                          break
+                            
+                            #NOTETYPE FOR SINGLE STAFF
                             else:
-                                   break
+                                   notetype = input("\n" + "ENTER RHYTHM OR 'list': "+"\n") 
+                                   if not notetype.isalnum:
+                                          raise ValueError
+                                   if notetype.lower() == 'list':
+                                          print("\n" #+ "-- whole or 1" + "\n" \
+                                                 #+ "-- half or 2" + "\n"\
+                                                 + "-- quarter or 4" + "\n"\
+                                                 #+ "-- quarter triplets or 6" + "\n"\
+                                                 + "-- eighth or 8" + "\n"\
+                                                 #+ "-- eighth triplets or 12" + "\n"\
+                                                 + "-- sixteenth or 16" + "\n" )
+                                                 #+ #"-- sixteenth triplets or 24")
+                                          #print('\n')
+                                          continue
+                                   if notetype in shortcuts.keys():
+                                          notetype = shortcuts[notetype]
+                                          config.notetype = notetype
+                                          break
+                                   if notetype not in shortcuts and notetype != 'list' :
+                                          raise Exception
+                                   else:
+                                          break
+                            
                      except ValueError:
+                            print("Value Error")
                             print("\n" + "ERROR: Enter a valid rhythm, or LIST" + "\n")
                             continue
                      except Exception:  
+                            print("Exception")
                             print("\n" + "ERROR: Enter a valid rhythm, or LIST" + "\n")
                             continue
-              config.notetype = notetype
+                     
 
               # MEASURE LENGTH - MAKING SURE IT MATCHES SUBDIVS
-              measure_length = config.measure_length
               t = int(config.timesig_beats)
-              if timesig_beattype == "4":
-                     if notetype == "quarter":
-                            measure_length = t 
-                     if notetype == "eighth":
-                            measure_length = t * 2
-                     if notetype == "16th":
-                            measure_length = t * 4
-                     if notetype == "32nd":
-                            measure_length = t * 8
-              if timesig_beattype == "8": #TODO DATA VALIDATION FOR ODD TIMES, 7 etc. - either need auto-8ths, rests or some kind of message
-                     if notetype == "quarter":
-                            measure_length = t//2 
-                     if notetype == "eighth":
-                            measure_length = t
-                     if notetype == "16th":
-                            measure_length = t * 2
-                     if notetype == "32nd":
-                            measure_length = t * 4
-
-              #TODO NOTESELECTION
+              notetypes = {"4":{"quarter":1,"eighth":2,"16th":4,"32nd":8},\
+                             "8":{"quarter":2,"eighth":1,"16th":2,"32nd":4}\
+                            }
+              #GRAND STAFF
+              if clef == "Grand Staff":
+                     measure_length = None #?
+                     if timesig_beattype == "8" and notetype == "quarter":
+                            measure_length_staff1 = t // (notetypes[timesig_beattype][notetype_staff1])
+                            measure_length_staff2 = t // (notetypes[timesig_beattype][notetype_staff2])
+                     else:
+                            measure_length_staff1 = int(t * (notetypes[timesig_beattype][notetype_staff1]))
+                            measure_length_staff2 = int(t * (notetypes[timesig_beattype][notetype_staff2]))
+                            
+                     
+                     if int(measure_length_staff1) >= int(measure_length_staff2):
+                            measure_length = measure_length_staff1
+                            shortstaff = measure_length_staff2
+                     else:
+                            measure_length = measure_length_staff2
+                            shortstaff = measure_length_staff1
+                     config.measure_length = measure_length
+                     config.measure_length_staff1 = measure_length_staff1
+                     config.measure_length_staff2 = measure_length_staff2
+              
+              #NON-GRAND STAFF
+              else:
+                     if timesig_beattype == "8" and notetype == "quarter":
+                            measure_length = t // (notetypes[timesig_beattype][notetype])
+                     else:       
+                            measure_length = t * (notetypes[timesig_beattype][notetype])
+              config.measure_length = measure_length
+       
               #SAMPLE SIZE ENTRY
               while True:
                      try:
                             print()
                             sample_size = int(input("ENTER SAMPLE SIZE: " + "\n"))
-                            if sample_size > len(scale):
+                            if int(sample_size) > int(len(scale)):
                                    raise Exception
-                            if sample_size > measure_length:
+                            if int(sample_size) > int(measure_length):
                                    raise e.SampleBiggerThanMeasure      
                             break
                      except ValueError:
-                            print("Enter a valid number: ")
+                            print()
+                            print("ERROR: Enter a valid number " + "\n")
                             continue
                      except e.SampleBiggerThanMeasure:
                             print(f"ERROR: Sample is bigger than measure length ({measure_length})!")
@@ -232,7 +317,7 @@ def run(selection):
                      try:
                             exercises = input("\n" + "ENTER NUMBER OF EXERCISES: " + "\n")
                             if exercises.lower() == 'max':
-                                   if math.factorial(measure_length) > 100:
+                                   if math.factorial(shortstaff) > 100:
                                           exercises = 100
                                    else:
                                           exercises = math.factorial(measure_length)
@@ -267,28 +352,18 @@ def run(selection):
 #FILENAME CUMSTOMIZATION
        while True:
               print()
-              date = time.strftime("%D",time.localtime())
+              date = time.strftime("%b" + "_" + "%-d" + "_" + "%y", time.localtime())
               filename = (f'{root.lower()}{scaletype}_'\
                      +f'{timesig_beats}-{timesig_beattype}_'\
                      +f'{notetype}_notes_'\
                      +f'{date}')
-              try:
-                     filename_selection = input(f"ENTER FILE NAME (C)ustom or (D)efault ('{filename}')?: " + "\n")
-                     path = '/xmlbounces/'
-                     if filename_selection.lower() == "c":
-                            filename = input("Enter File Name: " + "\n")
-                            break
-                     if filename_selection.lower() == "d":
-                            if filename + '.xml' in os.listdir(path):
-                                   raise Exception
-                            else:
-                                   break
-              except Exception:
-                     filename_selection = input(f"WARNING: {filename} already exists! Overwrite? (Y or N): ")
-                     if filename_selection.lower() == 'y':
-                            break
-                     if filename_selection.lower()== 'n':
-                            continue
+              filename_selection = input(f"ENTER FILE NAME (C)ustom or (D)efault ('{filename}')?: " + "\n")
+              if filename_selection.lower() == "c":
+                     print()
+                     filename = input("Enter File Name: " + "\n")
+                     break
+              if filename_selection.lower() == "d":
+                     break
                      #else: #TODO CREATE FILENAME ENTRY BLACKLIST
        config.filename = filename
 
@@ -305,8 +380,8 @@ def run(selection):
        print(f"Scale: {root} {scaletype}", end="\n")
        print(f"Sample Size: {sample_size}", end="\n")
        print(f"Sample Set: {config.sample}",end="\n")
-       if measure_length > sample_size:
-              print(f"Duplicates Allowed: {int(config.duplicates)}",end="\n")
+       #if measure_length > sample_size or measure_length_staff1 > sample_size or measure_length_staff2 > sample_size:
+       #       print(f"Duplicates Allowed: {int(config.duplicates)}",end="\n")       
        print(f"Rhythm: {notetype}",end="\n")
        print(f"Measure Length: {measure_length} Notes Per Measure", end="\n")
        print(f"Number of Exercises: {exercises}", end="\n")       
