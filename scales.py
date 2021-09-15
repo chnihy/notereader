@@ -91,7 +91,7 @@ allscales =	{"major" : {'A': ['A', 'B', 'Csharp', 'D', 'E', 'Fsharp', 'Gsharp'],
 					}
 
 
-class Fifths:
+class Fifths():
 	def __init__(self, key):
 		self.key = key
 		self.fifths = {"Cmajor": "0",

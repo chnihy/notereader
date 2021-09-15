@@ -108,6 +108,9 @@ def xmlwrite():
     if config.grid == "yes":
         exercise_list = config.grid_exercise_list
         grid_attributes = config.grid_attributes
+    """if config.scalepattern == "yes" and config.grid != "yes":
+        exercise_list = config.scale_pattern_exerciselist
+        noteattr = config.scale_pattern_attributelist"""
     beats = config.timesig_beats
     beat_type = config.timesig_beattype
     fifths = config.fifths
@@ -184,7 +187,7 @@ def xmlwrite():
         direction_type.text = str(exercise_num)
         
         #NOTES FIRST STAFF OR SINGLE STAFF
-        if config.grid != "yes":
+        if config.grid != "yes" and config.scalepattern != "yes":
             for ex_note in exercise_list[exercise_num].keys(): #
                 note = ET.SubElement(measure, "note")
                 pitch = ET.SubElement(note, "pitch")
@@ -234,8 +237,12 @@ def xmlwrite():
                 
         #GRID STAFF
         if config.grid == "yes":
-            for ex_notes in exercise_list[exercise_num]: #
-                for ex_note in ex_notes:
+            exercise_list = config.grid_exercise_list
+            for ex_notes in exercise_list: #numbers in exlist keys
+                for ex_note in exercise_list[ex_notes]:
+                    print(f"EX LIST: {exercise_list}")
+                    print(f"EX NOTES: {ex_notes}")
+                    print(f"EX NOTE: {ex_note}")
                     note = ET.SubElement(measure, "note")
                     pitch = ET.SubElement(note, "pitch")
                     SubElementWithText(pitch, "step", "A")
@@ -244,6 +251,21 @@ def xmlwrite():
                     SubElementWithText(note, "voice", "1")
                     SubElementWithText(note, "type", ex_note)
                     SubElementWithText(note, "stem", "up")
+
+        #SCALE PATTERN STAFF
+        if config.scalepattern == "yes":
+            noteattr = config.scale_pattern_attributelist
+            for ex in exercise_list:
+                for ex_note in exercise_list[ex]:
+                    note = ET.SubElement(measure, "note")
+                    pitch = ET.SubElement(note, "pitch")
+                    SubElementWithText(pitch, "step", ex_note)
+                    SubElementWithText(pitch, "octave", noteattr["octave"])
+                    SubElementWithText(note, "duration", noteattr["duration"])
+                    SubElementWithText(note, "voice", "1")
+                    SubElementWithText(note, "type", noteattr["type"])
+                    SubElementWithText(note, "stem", "up")
+
 
         #BARLINE RIGHT
         barline_right = ET.SubElement(measure,"barline", location="right")
