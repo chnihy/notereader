@@ -264,20 +264,33 @@ def run(selection):
               #GRAND STAFF
               if clef == "Grand Staff":
                      measure_length = None #?
-                     if timesig_beattype == "8" and notetype == "quarter":
-                            measure_length_staff1 = t // (notetypes[timesig_beattype][notetype_staff1])
+                     if timesig_beattype == "8":
+                            if notetype_staff1 == "quarter":
+                                   measure_length_staff1 = t // (notetypes[timesig_beattype][notetype_staff1])
+                            else:
+                                   measure_length_staff1 = int(t * (notetypes[timesig_beattype][notetype_staff1]))
+                            if notetype_staff2 == "quarter":
+                                   measure_length_staff2 = t // (notetypes[timesig_beattype][notetype_staff2])
+                            else:
+                                   measure_length_staff2 = int(t * (notetypes[timesig_beattype][notetype_staff2]))
+                            
+                     """if timesig_beattype == "8" and notetype_staff2 == "quarter":
                             measure_length_staff2 = t // (notetypes[timesig_beattype][notetype_staff2])
-                     else:
+                            if notetype_staff1 == "quarter":
+                                   measure_length_staff1 = t // (notetypes[timesig_beattype][notetype_staff1])
+                            else:
+                                   measure_length_staff1 = int(t * (notetypes[timesig_beattype][notetype_staff1]))"""
+                     if timesig_beattype != "8":
                             measure_length_staff1 = int(t * (notetypes[timesig_beattype][notetype_staff1]))
                             measure_length_staff2 = int(t * (notetypes[timesig_beattype][notetype_staff2]))
-                            
-                     
+                     #MASTER MEASURE LENGTH
                      if int(measure_length_staff1) >= int(measure_length_staff2):
                             measure_length = measure_length_staff1
                             shortstaff = measure_length_staff2
                      else:
                             measure_length = measure_length_staff2
                             shortstaff = measure_length_staff1
+                     
                      config.measure_length = measure_length
                      config.measure_length_staff1 = measure_length_staff1
                      config.measure_length_staff2 = measure_length_staff2
@@ -286,8 +299,10 @@ def run(selection):
               else:
                      if timesig_beattype == "8" and notetype == "quarter":
                             measure_length = t // (notetypes[timesig_beattype][notetype])
+                            shortstaff = measure_length
                      else:       
                             measure_length = t * (notetypes[timesig_beattype][notetype])
+                            shortstaff = measure_length
               config.measure_length = measure_length
        
               #SAMPLE SIZE ENTRY
@@ -320,10 +335,10 @@ def run(selection):
                                    if math.factorial(shortstaff) > 100:
                                           exercises = 100
                                    else:
-                                          exercises = math.factorial(measure_length)
+                                          exercises = (math.factorial(measure_length)) - (math.factorial(sample_size))
                                    break
-                            if int(exercises) > math.factorial(measure_length) and math.factorial(measure_length) <= 100:
-                                   print("\n" + f"ERROR: Too many exercises! Max possible exercises is {math.factorial(measure_length)}" + "\n")
+                            if int(exercises) > (math.factorial(measure_length)) and (math.factorial(shortstaff) - (math.factorial(sample_size))) <= 100:                                                 
+                                   print("\n" + f"ERROR: Too many exercises! Max possible exercises is {math.factorial(shortstaff)}" + "\n")
                                    continue
                             if int(exercises) > 100:
                                    print("\n" + "ERROR: Too many exercises! Max possible exercises is 100" + "\n")

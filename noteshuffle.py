@@ -101,7 +101,7 @@ def noteshuffle(scale, sample_size, measure_length, exercises):
                     tuple_measure = tuple((measure)) #MAKING THE SHUFFLED SET OF NOTES A TUPLE, SO THAT BIGLIST CAN BE MADE A SET.
                     if tuple_measure not in biglist:
                         biglist.append(tuple_measure)
-                    if len(biglist) == int(exercises): #math.factorial(measure_length):
+                    if len(biglist) == int(exercises):#math.factorial(measure_length):
                         break
         if measure_length == len(sample):
             if measure_length < config.measure_length_staff2:
@@ -112,7 +112,7 @@ def noteshuffle(scale, sample_size, measure_length, exercises):
                     tuple_measure = tuple((measure)) #MAKING THE SHUFFLED SET OF NOTES A TUPLE, SO THAT BIGLIST CAN BE MADE A SET.
                     if tuple_measure not in biglist:
                         biglist.append(tuple_measure)
-                    if len(biglist) == int(exercises): #math.factorial(measure_length)
+                    if len(biglist) == int(exercises):#math.factorial(measure_length):
                         break
             else:
                 while True:
@@ -121,7 +121,7 @@ def noteshuffle(scale, sample_size, measure_length, exercises):
                     tuple_measure = tuple((measure)) #MAKING THE SHUFFLED SET OF NOTES A TUPLE, SO THAT BIGLIST CAN BE MADE A SET.
                     if tuple_measure not in biglist:
                         biglist.append(tuple_measure)
-                    if len(biglist) == int(exercises): #math.factorial(measure_length):
+                    if len(biglist) == int(exercises):#math.factorial(measure_length):
                         break
         if measure_length > len(sample):
             if measure_length < config.measure_length_staff2:
@@ -135,7 +135,7 @@ def noteshuffle(scale, sample_size, measure_length, exercises):
                     tuple_measure = tuple((measure)) #MAKING THE SHUFFLED SET OF NOTES A TUPLE, SO THAT BIGLIST CAN BE MADE A SET.
                     if tuple_measure not in biglist:
                         biglist.append(tuple_measure)
-                    if len(biglist) == int(exercises): #math.factorial(measure_length)
+                    if len(biglist) == int(exercises):#math.factorial(measure_length):
                         break
             else:
                 while True:
@@ -144,11 +144,11 @@ def noteshuffle(scale, sample_size, measure_length, exercises):
                     tuple_measure = tuple((measure)) #MAKING THE SHUFFLED SET OF NOTES A TUPLE, SO THAT BIGLIST CAN BE MADE A SET.
                     if tuple_measure not in biglist:
                         biglist.append(tuple_measure)
-                    if len(biglist) == int(exercises):
+                    if len(biglist) == int(exercises):#100 or len(biglist) == math.factorial(measure_length):
                         break
                     else:
                         continue
-    for item in biglist: #(random.sample(biglist, k=exercises)): #ADDING THE EXERCISE TO THE CONFIG
+    for item in (random.sample(biglist, k=exercises)):
         config.exercise_list.append(item)
     
     # APPENDING EXERCISE LIST IF STAFF2 EXISTS
@@ -164,12 +164,12 @@ def noteshuffle(scale, sample_size, measure_length, exercises):
 
         if measure_length == len(sample):
             while True:
-                measure = copy(master)
+                measure = copy(sample)
                 shuff(measure)
                 tuple_measure = tuple((measure)) #MAKING THE SHUFFLED SET OF NOTES A TUPLE, SO THAT BIGLIST CAN BE MADE A SET.
                 if tuple_measure not in biglist:
                     biglist.append(tuple_measure)
-                if len(biglist) == int(exercises): #math.factorial(measure_length):
+                if len(biglist) == int(exercises):#math.factorial(measure_length):
                     break
         
         if measure_length > len(sample):
@@ -184,7 +184,7 @@ def noteshuffle(scale, sample_size, measure_length, exercises):
                     tuple_measure = tuple((measure)) #MAKING THE SHUFFLED SET OF NOTES A TUPLE, SO THAT BIGLIST CAN BE MADE A SET.
                     if tuple_measure not in biglist:
                         biglist.append(tuple_measure)
-                    if len(biglist) == int(exercises): #math.factorial(measure_length)
+                    if len(biglist) == int(exercises):#math.factorial(measure_length):
                         break
             else:
                 while True:
@@ -193,9 +193,9 @@ def noteshuffle(scale, sample_size, measure_length, exercises):
                     tuple_measure = tuple((measure)) #MAKING THE SHUFFLED SET OF NOTES A TUPLE, SO THAT BIGLIST CAN BE MADE A SET.
                     if tuple_measure not in biglist:
                         biglist.append(tuple_measure)
-                    if len(biglist) == int(exercises): #100:
+                    if len(biglist) == int(exercises):
                         break
                     else:
                         continue
-        for item in biglist: #(random.sample(biglist, k=exercises)): #ADDING THE EXERCISE TO THE CONFIG
+        for item in (random.sample(biglist, k=exercises)): #ADDING THE EXERCISE TO THE CONFIG
             config.exercise_list_staff2.append(item)

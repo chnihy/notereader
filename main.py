@@ -4,6 +4,7 @@
 - QA/Test and error log:
 	7/8 is fucked
 - Triplets
+- RANDOM OPTIONS FOR ALL INPUTS - EX: RANDOM KEY, SCALE, RHYTM ETC...
 - Basslines/Hand Patterns = Alberti, Hannons, 
 - recycle repeats: so if sample < measure, the same note isn't repeated the whole page
 - CHORDS
@@ -51,38 +52,7 @@ while True:
 		else:
 			break
 	
-	attributes.setattr()
-	print()
-	print("ATTRIBUTES STAFF 1")
-	pprint(config.exercises_withattr_list)
-	print()
-	print("ATTRIBUTES STAFF 2")
-	pprint(config.exercises_withattr_list_staff2)
-	print()
-	print("MEASURE LENGTH STAFF 1: ")
-	print(config.measure_length_staff1)
-	print()
-	print("MEASURE LENGTH STAFF 2: ")
-	print(config.measure_length_staff2)
-	print()
-	print("CONFIG.NOTETYPE: ")
-	print(config.notetype)
-	print()
-	print("DIVS ")
-	print(config.divs)
-	print()
-	print("NOTETYPE_STAFF1 ")
-	print(config.notetype_staff1)
-	print()
-	print("NOTETYPE_STAFF2 ")
-	print(config.notetype_staff2)
-	print()
-	print("DUR_1 ")
-	print(config.test)
-	print()
-	print("DUR_2 ")
-	print(config.test2)
-	
+	attributes.setattr()	
 	xmlwriter.xmlwrite()
 	
 	#PROGRAM LOOP/PRINTING - TODO This loop may be wonky and/or redundant, double check later...
