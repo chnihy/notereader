@@ -10,6 +10,10 @@ from copy import copy
 #from templates import templates, temp_templatesq
 from _templates_ import templates, temp_templates
 
+def gitTestingFunc():
+	return("It worked!")
+
+
 def note(rhythm, dur=1, pitch="G4"):
     note = {"rhythm": rhythm, "dur": dur, "pitch":pitch}
     return note
