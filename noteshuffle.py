@@ -1,5 +1,6 @@
 #!python
 # note shuffle, a first version of a shuffling program
+
 import random, scales, math, config
 from pprint import pprint
 from copy import copy

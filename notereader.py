@@ -1,6 +1,8 @@
 #! python3
 # Notereader app - main program.  Where the user types stuff in 
 
+# TODO Outsource XML generation to SCAMP or Mingus
+
 from noteshuffle import noteshuffle
 from pprint import pprint
 import exceptions as e
@@ -8,13 +10,7 @@ import scales, config, attributes, math, os, sys, time
 
 def run(selection):
        print("\n" + "---------- NOTE READER ----------" + "\n")
-       
-       """selection = input("Select type of exercise: \n  \
-       1. Shuffle  \
-       2. Moving Grid \
-       3. Stacking Grid \
-       4. Reversing Grid \n"
-       )      """
+
        if selection == "1":
               #CLEF
               while True:
@@ -367,19 +363,25 @@ def run(selection):
 #FILENAME CUMSTOMIZATION
        while True:
               print()
+              
               date = time.strftime("%b" + "_" + "%-d" + "_" + "%y", time.localtime())
+              
               filename = (f'{root.lower()}{scaletype}_'\
                      +f'{timesig_beats}-{timesig_beattype}_'\
                      +f'{notetype}_notes_'\
                      +f'{date}')
+              
               filename_selection = input(f"ENTER FILE NAME (C)ustom or (D)efault ('{filename}')?: " + "\n")
+              
               if filename_selection.lower() == "c":
                      print()
                      filename = input("Enter File Name: " + "\n")
                      break
+              
               if filename_selection.lower() == "d":
                      break
                      #else: #TODO CREATE FILENAME ENTRY BLACKLIST
+       
        config.filename = filename
 
        #SENDING TO THE SHUFFLER AND PRINTING INOF
@@ -401,3 +403,4 @@ def run(selection):
        print(f"Measure Length: {measure_length} Notes Per Measure", end="\n")
        print(f"Number of Exercises: {exercises}", end="\n")       
 #print(config.exercise_list)
+
