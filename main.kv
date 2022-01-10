@@ -1,1 +1,267 @@
-#
+#: import r random
+#### MainLayout 
+#### holds everything
+<MainLayout>:
+    orientation: 'vertical'
+	canvas:
+		Color:
+			rgba: .75,.75,1,.5
+		Rectangle:
+			size: self.size
+			pos:self.pos
+
+
+#### Modules. 
+#### holds Title and Panels
+<Module>:
+	orientation:'vertical'
+
+
+#### Panels
+#### holds name of input and input entry
+<Panel>:
+	orientation:'horizontal'
+	canvas:
+		Color:
+			rgba: 0,0,0,.5
+		Rectangle:
+			size: self.size
+			pos:self.pos
+
+#### Text and Fonts
+<AppTitle@Label>:
+    font_size: 65
+    size_hint: 1, None
+    height: 100
+    color: 1,1,1,1
+    canvas.before:
+		Color:
+			rgba: 0,0,0,.75
+		Rectangle:
+			size: self.size
+			pos:self.pos
+
+
+<ModuleTitle@Label>:
+	font_size: 30
+	size_hint: 1, None
+	height: 100
+	color: 1,1,1,1
+	canvas.before:
+		Color:
+			rgba: ([r.random() for x in range(3)] + [.5])
+		Rectangle:
+			size: self.size
+			pos:self.pos
+
+<PanelTitle@Label>:
+	font_size: 25
+    color: 1,1,1,1
+    canvas.before:
+		Color:
+			rgba: 0,0,0,.5
+		Rectangle:
+			size: self.size
+			pos:self.pos
+
+<TextInput>:
+	multiline: False
+	cursor_blink: True
+	font_size: 30
+	halign: 'center'
+
+
+#### Drop Down Menus
+<Spinner>:
+    font_size: 20
+<RootList>:
+	text: 'C'
+	values: self.keyslist
+<RhythmList>:
+	text: "quarter"
+	values: self.rhythmlist
+<ScaleList>:
+	text: "major"
+	values: self.scalelist
+<ClefList@Spinner>:
+    text: "Treble"
+    values: "Treble","Bass","Grand Staff"
+
+
+
+#### Declaring empty classes
+<Time>:
+<Rhythm>:
+<Scale>:
+<Exercises>:
+
+
+
+
+#### ---------- Actual App starts here ---------- ####
+<MainLayout>:
+	# ObjectProperties
+    AppTitle:
+        text: "Note Reader App"
+
+    #### ------ Top Row ------ ####
+
+    GridLayout:
+        cols: 3
+        rows: 1
+        padding: 150, 20, 150, 0
+        spacing: 20
+
+        # Time Module
+        Time:
+            id: time
+
+            ModuleTitle:
+                text: "Time"
+            
+
+            # Tempo
+            Panel:
+                id: tempo
+                orientation:'horizontal'
+                PanelTitle:
+                    text:'Tempo'
+                TextInput:
+                    id: tempo_selection
+                    text: "120"
+                    hint_text: "120"
+                    input_filter: 'float'
+
+            
+            # Time Signature
+            Panel:
+                id: time_sig
+                orientation:'horizontal'
+                
+                PanelTitle:
+                    text:'Time Sig'
+                
+                Panel:
+                    orientation:'vertical'
+                    TextInput:
+                        id: beats_selection
+                        hint_text: "4"	
+                        text: "4"
+                        input_filter: 'int'
+                    Spinner:
+                        id: beats_lower_selection
+                        text: "4"	
+                        values: "1","2","4","8"
+        
+        
+
+            
+            
+        #### Rhythm Module
+        Rhythm:
+            ModuleTitle:
+                text:'Rhythm'
+            
+            # Rhythm   
+            Panel:
+                PanelTitle:
+                    text:'Rhythm'
+                RhythmList:
+                    id: a_rhythm_selection
+
+        # Scale Module
+        ScaleSelect:
+            ModuleTitle:
+                text:'Scale'
+
+            # Clef
+            Panel:
+                orientation: 'horizontal'
+                PanelTitle:
+                    text: "Clef"
+                ClefList:
+
+            
+            # Key
+            Panel:
+                orientation:'horizontal'
+                PanelTitle:
+                    text:'Key'
+                RootList:
+                    id: key_signature_selection
+
+            
+            # Root
+            Panel:
+                orientation:'horizontal'
+                PanelTitle:
+                    text:'Root'
+                RootList:
+                    text: "C"
+                    id: scaleroot_selection
+            
+            # ScaleType
+            Panel:
+                orientation:'horizontal'
+                PanelTitle:
+                    text:'Scale'
+                ScaleList:
+                    text: "major"
+                    id: scaletype_selection
+            
+            # Starting Note
+            Panel:
+                orientation:'horizontal'
+                PanelTitle:
+                    text:'Start Note'
+                RootList:
+                    id: starting_note_selection
+    
+    #### ------ Bottom Row ------ ####
+
+    GridLayout:
+        cols: 2
+        rows: 1
+        spacing: 20
+        padding: 150, 20, 150, 50
+        
+        
+        #### Exercises Module
+        Exercises:
+            ModuleTitle:
+                text:'Exercises'
+                
+            # Sample Size
+            # TODO this needs to be dynamic - reacting to scale selection
+            Panel:
+                PanelTitle:
+                    text: "Sample Size"
+                TextInput:
+                    id: sample_size
+                    input_filter: "int"
+                    text: "7"
+
+            # Number of Exercises
+            Panel:
+                PanelTitle:
+                    text: "# of Ex's"
+                TextInput:
+                    id: num_of_exs
+                    input_filter: "int"
+                    text: "10"
+    
+
+            # Title Entry
+            Panel:
+                PanelTitle:
+                    text:'Custom Title'
+                TextInput:
+                    id: title_entry
+                    text: "Default Title"
+				
+
+		# Run Button
+		Button:
+			text: "Run"
+			font_size: 40
+			on_release: root.run_program()

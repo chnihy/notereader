@@ -1,9 +1,0 @@
-Create sample size - separate from measure length
-
-create note() and maybe rest() functions
-
-make individual note attributes editable
-
-rhythmic flexibility
-
-2/3/21 if samplesize < scale and measure_length >= scale.  Needs validation, Some sort of factorial calculation

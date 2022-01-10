@@ -5,7 +5,6 @@
 
 from noteshuffle import noteshuffle
 from pprint import pprint
-import exceptions as e
 import scales, config, attributes, math, os, sys, time
 
 def run(selection):
