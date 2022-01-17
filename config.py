@@ -1,35 +1,35 @@
 #! python3
 # config - where global variables are stored
 
-#GENERAL NEW STUFF TODO - DELETE A LOT OF OLD STUFF
-a_rhythm = "eighth"
-b_rhythm = "eighth"
-grid = False
-tempo = 60
-temp_notes=[]
+##### ------ Module Settings ------ ####
+# Time Settings
+tempo = 120
+beats = 4
+beattype = 4
+rhythm = "quarter"
+
+# Scale Settings
+clef = "treble"
+key_signature = "C major"
+root = "C"
+scaletype = "major"
 flats = True
+scale = []
 
-#SCALE CONSTRUCTION
-root = "" #SCALE ROOT
-scaletype = "" #MAJ, MIN ETC...
+# Exercise Settings
+sample_size = 7
+num_of_exs = 10
 
-#RANDOMIZER SAMPLE CONSTRUCTION
-sample_size = "" 
-master = []
-sample = []
-duplicates = "" #TOLERATED DUPLICATES IN SAMPLE
-
-#EXERCISE LISTS AND NOTE ATTRIBUTES
-exercise_list = []
-exercise_list_2 = []
-combined_exercise_list = []
-grid_exercise_list = []
-grid_measure_a = []
-grid_measure_b = []
-
-#KEY INDEXES
-grid_measure_index = []
-
-#FILENAME AND TITLE
+# Title Settings
+title = "Default Title"
 filename = ""
-title = ""
+
+
+#### ------ Shuffler Settings ------ ####
+
+# Noteshuffle 
+sample = []
+duplicates_allowed = "" 
+
+# Exercise List
+exercise_list = []

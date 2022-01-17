@@ -76,7 +76,10 @@
     font_size: 20
 <RootList>:
 	text: 'C'
-	values: self.keyslist
+	values: self.rootlist
+<KeySigList>:
+    text: "C major"
+    values: self.key_signatures
 <RhythmList>:
 	text: "quarter"
 	values: self.rhythmlist
@@ -101,11 +104,14 @@
 #### ---------- Actual App starts here ---------- ####
 <MainLayout>:
 	# ObjectProperties
+    
+    
+    #### ------ Title Bar ------####
     AppTitle:
         text: "Note Reader App"
 
-    #### ------ Top Row ------ ####
 
+    #### ------ Top Row ------ ####
     GridLayout:
         cols: 3
         rows: 1
@@ -118,7 +124,6 @@
 
             ModuleTitle:
                 text: "Time"
-            
 
             # Tempo
             Panel:
@@ -131,6 +136,7 @@
                     text: "120"
                     hint_text: "120"
                     input_filter: 'float'
+                    on_text: time.set_tempo(self.text)
 
             
             # Time Signature
@@ -148,29 +154,32 @@
                         hint_text: "4"	
                         text: "4"
                         input_filter: 'int'
+                        on_text: time.set_beats(self.text)
                     Spinner:
-                        id: beats_lower_selection
+                        id: beattype_selection
                         text: "4"	
-                        values: "1","2","4","8"
+                        values: "4","8"
+                        on_text: time.set_beattype(self.text)
         
         
-
-            
-            
         #### Rhythm Module
         Rhythm:
+            id: rhythm
+            
             ModuleTitle:
                 text:'Rhythm'
             
-            # Rhythm   
+            # Rhythm Panel  
             Panel:
                 PanelTitle:
                     text:'Rhythm'
                 RhythmList:
-                    id: a_rhythm_selection
+                    id: rhythm_selection
+                    on_text: rhythm.set_rhythm(self.text)
 
         # Scale Module
         ScaleSelect:
+            id: scalemod
             ModuleTitle:
                 text:'Scale'
 
@@ -180,6 +189,7 @@
                 PanelTitle:
                     text: "Clef"
                 ClefList:
+                    on_text: scalemod.set_clef(self.text)
 
             
             # Key
@@ -187,8 +197,9 @@
                 orientation:'horizontal'
                 PanelTitle:
                     text:'Key'
-                RootList:
+                KeySigList:
                     id: key_signature_selection
+                    on_text: scalemod.set_key_signature(self.text)
 
             
             # Root
@@ -199,6 +210,8 @@
                 RootList:
                     text: "C"
                     id: scaleroot_selection
+                    on_text: scalemod.set_root(self.text)
+                    on_text: scalemod.set_flats_or_sharps(self.text)
             
             # ScaleType
             Panel:
@@ -208,17 +221,10 @@
                 ScaleList:
                     text: "major"
                     id: scaletype_selection
+                    on_text: scalemod.set_scaletype(self.text)
             
-            # Starting Note
-            Panel:
-                orientation:'horizontal'
-                PanelTitle:
-                    text:'Start Note'
-                RootList:
-                    id: starting_note_selection
-    
-    #### ------ Bottom Row ------ ####
 
+    #### ------ Bottom Row ------ ####
     GridLayout:
         cols: 2
         rows: 1
@@ -228,6 +234,7 @@
         
         #### Exercises Module
         Exercises:
+            id: exercises
             ModuleTitle:
                 text:'Exercises'
                 
@@ -240,8 +247,10 @@
                     id: sample_size
                     input_filter: "int"
                     text: "7"
+                    on_text: exercises.set_sample_size(self.text)
 
             # Number of Exercises
+            # TODO this needs to be dynamic - reacting to scale selection
             Panel:
                 PanelTitle:
                     text: "# of Ex's"
@@ -249,8 +258,8 @@
                     id: num_of_exs
                     input_filter: "int"
                     text: "10"
+                    on_text: exercises.set_num_of_exs(self.text)
     
-
             # Title Entry
             Panel:
                 PanelTitle:
@@ -258,10 +267,11 @@
                 TextInput:
                     id: title_entry
                     text: "Default Title"
+                    on_text: exercises.set_title(self.text)
 				
 
 		# Run Button
 		Button:
 			text: "Run"
 			font_size: 40
-			on_release: root.run_program()
+			on_release: root.run()

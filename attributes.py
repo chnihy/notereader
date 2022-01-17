@@ -6,13 +6,17 @@ from pprint import pprint
 
 def setattr():
     exercise_list = config.exercise_list
+    
     exercises_withattr_list = config.exercises_withattr_list
+    
     notetype = config.notetype
+    
     if config.clef == "Grand Staff":
         exercise_list_staff2 = config.exercise_list_staff2
         exercises_withattr_list_staff2 = config.exercises_withattr_list_staff2
         notetype_staff2 = config.notetype_staff2
         notetype_staff1 = config.notetype_staff1
+    
     if config.grid == "yes":
         exercise_list = config.grid_exercise_list
 
@@ -20,6 +24,7 @@ def setattr():
     oct = ""
     if config.clef == "G" or config.clef == "Grand Staff":
         oct = "4"
+    
     if config.clef == "F":
         oct = "3"
     
@@ -28,21 +33,27 @@ def setattr():
                 "eighth":"2",\
                 "16th":"4",\
                 "32nd":"8"}
+    
     if config.clef == "Grand Staff":
         divs = divs_keys[notetype] #MASTER DIVISIONS - FROM SMALLER SUBDIV
         config.divs = divs
+        
         if config.notetype_staff1 == config.notetype: #STAFF 1 IS SMALLER SUBDIV
             dur_staff1 = "1"
             config.test = dur_staff1
+        
         if config.notetype_staff1 != config.notetype: #STAFF 2 IS SMALLER SUBDIV
             dur_staff1 = str(int(divs) / int(divs_keys[config.notetype_staff1]))[0]
             config.test = dur_staff1
+        
         if config.notetype_staff2 == config.notetype:
             dur_staff2 = "1"
             config.test2 = dur_staff2
+        
         if config.notetype_staff2 != config.notetype:
             dur_staff2 = str(int(divs) / int(divs_keys[config.notetype_staff2]))[0]
             config.test2 = dur_staff2
+    
     else:
         dur_staff1 = "1"
         
