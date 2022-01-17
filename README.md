@@ -22,8 +22,7 @@ Requires installation of Scamp and Kivy packages
 
   - Or you can manually install the required packages:
     - pip3 install --user scamp
-      Note: 
-      You will also need to install abjad and lilypond as part of SCAMP's xml engraving dependencies 
+    - Note: You will also need to install abjad and lilypond as part of SCAMP's xml engraving dependencies 
     - brew install lilypond
     - pip3 install abjad
     - pip3 install kivy
