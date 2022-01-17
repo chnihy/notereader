@@ -15,10 +15,15 @@ More features will be coming in the future, some planned updates:
   - Export to MIDI/mp3
 
 # Requirements
-Requires installation of SCAMP and Kivy
-  - pip3 install --user scamp
-    Note: 
-    You will also need to install abjad and lilypond as part of SCAMP's xml engraving dependencies 
-  - brew install lilypond
-  - pip3 install abjad
-  - pip3 install kivy
+Requires installation of Scamp and Kivy packages
+  - You can use the included venv which has all dependencies already installed:
+    - $ source ./notereader_venv/bin/activate
+    - $ python3 main.py
+
+  - Or you can manually install the required packages:
+    - pip3 install --user scamp
+      Note: 
+      You will also need to install abjad and lilypond as part of SCAMP's xml engraving dependencies 
+    - brew install lilypond
+    - pip3 install abjad
+    - pip3 install kivy
