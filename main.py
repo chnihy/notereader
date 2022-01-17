@@ -1,17 +1,18 @@
 #! python3 
 
-# TODO Order of Operations:
-# 1. Wireframe
-# 2. Functionality
+# TODO's
+# 1. Functionality
     # TODO add 'max' for sample size selection
     # TODO add option to use one sample set for all exs or 
     # generate new sample for each exercise
     # TODO allow multiple measure long exs
     # TODO remove duplicate options: in measure, in ex    
     # TODO Customize appearance in XML, line breaks and 
+    # TODO Still some bugs when beattype == 8, might need to explicity define rhythm nums for 7/8,9/8, etc... in <exercise_generator>
     # exercise numbers etc...
-# 3. Data validation
-# 4. Design
+    # TODO Support for grand staff
+# 2. Data validation
+# 3. Design
 
 
 import kivy
