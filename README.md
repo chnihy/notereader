@@ -1,11 +1,12 @@
 # Notereader
-Notereader is a tool for music students and teachers.  It generates random sight reading exercises and has lots of customization:
+Notereader is a tool in development for music students and teachers.  It generates random sight reading exercises and has lots of customization:
   - Scale
   - Rhythm
   - Time Signature
   - Key
 
 More features will be coming in the future, some planned updates:
+  - Packaging for OS/iOS
   - Complexity settings
   - Mixed rhythms
   - Rests
@@ -13,6 +14,12 @@ More features will be coming in the future, some planned updates:
   - Prettier user interface
   - Playback support/Integrated note display
   - Export to MIDI/mp3
+
+# Installation/Running
+1. Install Dependecies (you can skip this step if you use the included virtual environment)
+2. Download zip
+3. cd to notereader directory (activate virtual environment)
+4. python3 main.py
 
 # Requirements
 Requires installation of Scamp and Kivy packages
