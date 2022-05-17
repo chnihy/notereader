@@ -28,8 +28,10 @@ cd notereader
 
 ### 2. Install Requirements
 ```bash
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 ```
+
+
 ### 3. Run main.py
 ```bash
 python3 main.py
